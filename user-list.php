@@ -44,7 +44,7 @@
           <div class="card bg-secondary shadow border-0">
             <div class="card-header bg-transparent pb-5">
               <div class="text-center">
-                  <h2>User List</h2>
+                  <h2>User List</h2> <a href = "./register.php" class = "btn btn-primary">Register</a>
               </div>
             </div>
             <div class="card-body px-lg-5 py-lg-5">

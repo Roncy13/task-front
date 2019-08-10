@@ -142,7 +142,7 @@
                 </div>
                 <div class="text-center">
                   <button type="submit" class="btn btn-primary mt-4">Create account</button>
-                  <a href="./login.php" type="button" class="btn btn-danger mt-4">Back</a>
+                  <a href="./user-list.php" type="button" class="btn btn-danger mt-4">Back</a>
                 </div>
               </form>
             </div>
