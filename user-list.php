@@ -39,6 +39,7 @@
     <div class="container mt-5 pb-5">
       <!-- Table -->
       <div class="row justify-content-center">
+
         <div class="col-lg-10 col-md-10">
           <div class="card bg-secondary shadow border-0">
             <div class="card-header bg-transparent pb-5">
@@ -47,6 +48,7 @@
               </div>
             </div>
             <div class="card-body px-lg-5 py-lg-5">
+
                 <table class = "table">
                     <thead>
                       <tr>
@@ -58,11 +60,75 @@
                     </thead>
                     <tbody id = "user-list"></tbody>
                 </table>
-
+                <br>
+                   <form role="form" id = "register-form">
+                <div class="form-group">
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                    </div>
+                    <input required class="form-control" placeholder="First Name" type="text" id = "firstName">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                    </div>
+                    <input class="form-control" placeholder="Middle Name" type="text" id = "middleName">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                    </div>
+                    <input required class="form-control" placeholder="Last Name" type="text" id = "lastName">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                    </div>
+                    <input class="form-control" placeholder="Phone" type="text" id = "phone">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                    </div>
+                    <input required class="form-control" placeholder="Email" type="email" id = "email">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group input-group-alternative">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                    </div>
+                    <input required class="form-control" placeholder="Password" type="password" id = "password">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group input-group-alternative">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text" for="inputGroupSelect01">Title *</label>
+                    </div>
+                    <select required required class="custom-select" id="position" id = "position">
+                      <option selected>Choose...</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary mt-4">Save</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
   <!-- Footer -->
@@ -101,6 +167,8 @@
   <!--   Argon JS   -->
   <script src="./assets/js/argon-dashboard.min.js?v=1.1.0"></script>
   <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
   <script>
     window.TrackJS &&
       TrackJS.install({
@@ -134,11 +202,15 @@
             fullName.html(row.fullName);
             position.html(row.title);
             
-            editBtn.attr('class', ' btn btn-primary');
-            deleteBtn.attr('class', ' btn btn-danger');
+            editBtn.attr('class', ' btn btn-primary edit-user');
+            deleteBtn.attr('class', ' btn btn-danger edit-button');
 
             editBtn.html('Edit');
             deleteBtn.html('Delete');
+
+            // Getting IDS
+            editBtn.attr('data-id', row.id);
+            deleteBtn.attr('data-id', row.id);
 
             action.append(editBtn);
             action.append(deleteBtn);
@@ -152,6 +224,77 @@
           });
         }
       });
+
+      var position = $('#position');
+      var userPick = null;
+
+      $.ajax({
+        url: 'http://localhost/task-back/router/position.php',
+        method: 'get',
+        success: function(response) {
+          response.forEach(function(row) {
+
+            var option = $('<option></option>');
+
+            option.html(row.title);
+            option.attr('value', row.id);
+
+            position.append(option);
+
+          })
+        }
+      })
+
+      $('#user-list').on('click' , '.edit-user', function() {
+        var id = $(this).attr('data-id');
+        userPick = id;
+
+        $.ajax({
+          method: 'GET',
+          url: 'http://localhost/task-back/router/read_by_id_user.php?id=' + id,
+          success: function(response) {
+
+            $('#firstName').val(response.firstName);
+            $('#middleName').val(response.middleName);
+            $('#lastName').val(response.lastName);
+            $('#phone').val(response.phone);
+            $('#email').val(response.email);
+            $('#password').val(response.userPass);
+            $("#position").val(response.position_id).change();
+          }
+        });
+
+      });
+
+      $('#register-form').submit(function() {
+        event.preventDefault();
+
+        var data = {
+          firstName: $('#firstName').val(),
+          middleName: $('#middleName').val(),
+          lastName: $('#lastName').val(),
+          phone: $('#phone').val(),
+          email: $('#email').val(),
+          password: $('#password').val(),
+          position_id: $('#position :selected').val(),
+          id: userPick
+        };
+
+        $.ajax({
+          method: 'PUT',
+          url: 'http://localhost/task-back/router/update_user.php',
+          data: data,
+          success: function(response) {
+            console.log(response);
+            alert('You have successfully edited user');
+            location.reload();
+          },
+          error: function(resp) {
+            console.log(resp);
+          }
+        });
+       
+      })
 
     });
   </script>
