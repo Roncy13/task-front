@@ -203,7 +203,7 @@
             position.html(row.title);
             
             editBtn.attr('class', ' btn btn-primary edit-user');
-            deleteBtn.attr('class', ' btn btn-danger edit-button');
+            deleteBtn.attr('class', ' btn btn-danger delete-user');
 
             editBtn.html('Edit');
             deleteBtn.html('Delete');
@@ -261,6 +261,25 @@
             $('#email').val(response.email);
             $('#password').val(response.userPass);
             $("#position").val(response.position_id).change();
+          }
+        });
+
+      });
+
+       $('#user-list').on('click' , '.delete-user', function() {
+        var id = $(this).attr('data-id');
+       
+        $.ajax({
+          method: 'DELETE',
+          url: 'http://localhost/task-back/router/delete_user.php?',
+          data: {
+            id: id
+          },
+          success: function(response) {
+
+            console.log(response);
+            alert('You have deleted successfully');
+            location.reload();
           }
         });
 
